@@ -34,9 +34,76 @@ const PropertyAddForm = () => {
     setMounted(true);
   }, []);
 
-  const handleChange = () => {};
-  const handleAmenitiesChange = () => {};
-  const handleImageChange = () => {};
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // check if nested property
+    // if what we clicked on is an object like location/rates/seller_info
+    if (name.includes(".")) {
+      // destructoring - in case of location if you want some data you need location.street
+      // with this outerKey became the first Key (location, rates, seller_info) and innerKey is the key from object (street, weekly, name, etc...).
+      const [outerKey, innerKey] = name.split(".");
+
+      // take the state and check all prevFields
+      // take the outerKey(location as an exemple) and open the object {}
+      // set the outerKet to the outerKey from state and change the innerKey selected (street as an exemple)
+      // send the object back with the new value we get from input.
+      setFields((prevFields) => ({
+        ...prevFields,
+        [outerKey]: {
+          ...prevFields[outerKey],
+          [innerKey]: value,
+        },
+      }));
+    } else {
+      setFields((prevFields) => ({
+        ...prevFields,
+        [name]: value,
+      }));
+    }
+  };
+  const handleAmenitiesChange = (e) => {
+    const { value, checked } = e.target;
+
+    // clone the current array
+    const updatedAmenites = [...fields.amenities];
+
+    if (checked) {
+      // add value to array
+      updatedAmenites.push(value);
+    } else {
+      // Remove value from arr
+      // if not there the indexOf return -1
+      const index = updatedAmenites.indexOf(value);
+      // not equal with -1 means its there.
+      if (index !== -1) {
+        updatedAmenites.splice(index, 1);
+      }
+    }
+
+    // Update state with updated array
+    setFields((prevFields) => ({
+      ...prevFields,
+      amenities: updatedAmenites,
+    }));
+  };
+  const handleImageChange = (e) => {
+    const { files } = e.target;
+
+    // clone images arr
+    const updatedImages = [...fields.images];
+
+    // add new files to the arr
+    for (const file of files) {
+      updatedImages.push(file);
+    }
+
+    // update state with the new arr
+    setFields((prevFields) => ({
+      ...prevFields,
+      images: updatedImages,
+    }));
+  };
 
   return (
     mounted && (
