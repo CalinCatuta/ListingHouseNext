@@ -1,10 +1,10 @@
-import { Schema, model, models } from "mongoose";
+import { Schema, model, models } from 'mongoose';
 
 const PropertySchema = new Schema(
   {
     owner: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     name: {
@@ -71,11 +71,15 @@ const PropertySchema = new Schema(
         type: String,
       },
     },
-    images: [
-      {
-        type: String,
+    // NOTE: Limit the user to a maximum of 4 images
+    images: {
+      type: [String],
+      validate: {
+        validator: (v) => v.length <= 4,
+        message: (props) =>
+          `The images array can contain a maximum of 4 images, but got ${props.value.length}`,
       },
-    ],
+    },
     is_featured: {
       type: Boolean,
       default: false,
@@ -86,6 +90,6 @@ const PropertySchema = new Schema(
   }
 );
 
-const Property = models.Property || model("Property", PropertySchema);
+const Property = models.Property || model('Property', PropertySchema);
 
 export default Property;
